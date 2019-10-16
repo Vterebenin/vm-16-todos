@@ -1,19 +1,21 @@
 from rest_framework import serializers
 from django.contrib.auth.models import User
-from snippets.models import Snippet, LANGUAGE_CHOICES, STYLE_CHOICES
+from snippets.models import Snippet
 
 
 class SnippetSerializer(serializers.ModelSerializer):
+    owner = serializers.ReadOnlyField(source='owner.username')
+    highlight = serializers.HyperlinkedIndentityField(view_name='snippet-highlight', format='html')
 
     class Meta:
         model = Snippet
-        owner = serializers.ReadOnlyField(source='owner.username')
-        fields = ['id', 'title', 'code', 'linenos', 'language', 'style', 'owner',]
+        fields = ['url', 'id', 'highlight', 'owner',
+                  'title', 'code', 'linenos', 'language', 'style']
 
 
-class UserSerializer(serializers.ModelSerializer):
+class UserSerializer(serializers.HyperlinkedModelSerializer):
+    snippets = serializers.HyperlinkedRelatedField(many=True, view_name='snippet-detail', read_only=True)
 
     class Meta:
-        snippets = serializers.PrimaryKeyRelatedField(many=True, queryset=Snippet.objects.all())
         model = User
-        fields = ['id', 'username', 'snippets']
+        fields = ['url', 'id', 'username', 'snippets']
