@@ -1,9 +1,9 @@
 <template>
   <div id="app">
     <div id="nav">
-      <router-link to="/">Home</router-link> |
-      <router-link to="/projects">Projects</router-link> |
-      <router-link to="/about">About</router-link>
+      <router-link to="/">Главная</router-link> |
+      <router-link to="/projects">Проекты</router-link> |
+      <router-link to="/about">Контакты</router-link>
     </div>
     <router-view/>
   </div>
@@ -20,10 +20,9 @@
     },
     async mounted() {
       const client = github.client()
-      const user = await client.get('/users/vterebenin', {}, function (err, status, body, headers) {
-        console.log(body)
-      });
-
+      const ghuser = client.user('vterebenin')
+      const userInfo = await ghuser.infoAsync()
+      console.log(userInfo)
     }
   }
 </script>
